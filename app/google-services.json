@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "23298068250",
+    "project_id": "chronos-flobiz",
+    "storage_bucket": "chronos-flobiz.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:23298068250:android:8262d585e4ea4d6d41a6a3",
+        "android_client_info": {
+          "package_name": "ayush.chronos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAC0zAnA8d6lmpr95javrHU4vTGlS3nAxo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
