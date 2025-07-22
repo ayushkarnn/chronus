@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -62,7 +63,7 @@ fun HomeScreen(
                 }) {
                     Icon(Icons.Default.Add, contentDescription = "Add Reminder")
                 }
-                Spacer(Modifier.width(12.dp))
+                Spacer(Modifier.height(22.dp))
                 FloatingActionButton(onClick = {
                     aiDialogVisible.value = true
                     userPrompt.value = ""
@@ -74,68 +75,82 @@ fun HomeScreen(
         }
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize()) {
-            LazyColumn(
-                contentPadding = innerPadding,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(reminders, key = { it.id }) { reminder ->
-                    Column {
-                        ReminderCard(
-                            reminder = reminder,
-                            modifier = Modifier.clickable {
-                                openActionCardId.value =
-                                    if (openActionCardId.value == reminder.id) null else reminder.id
-                            }
-                        )
-                        if (reminder.id in scheduledIds && reminder.dateTime > System.currentTimeMillis()) {
-                            val timeStr = remember(reminder.dateTime) {
-                                SimpleDateFormat("MMM d, yyyy h:mm a").format(
-                                    Date(reminder.dateTime)
+            if (reminders.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "No Reminder Found",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            } else {
+                LazyColumn(
+                    contentPadding = innerPadding,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(reminders, key = { it.id }) { reminder ->
+                        Column {
+                            ReminderCard(
+                                reminder = reminder,
+                                modifier = Modifier.clickable {
+                                    openActionCardId.value =
+                                        if (openActionCardId.value == reminder.id) null else reminder.id
+                                }
+                            )
+                            if (reminder.id in scheduledIds && reminder.dateTime > System.currentTimeMillis()) {
+                                val timeStr = remember(reminder.dateTime) {
+                                    SimpleDateFormat("MMM d, yyyy h:mm a").format(
+                                        Date(reminder.dateTime)
+                                    )
+                                }
+                                Text(
+                                    text = "Notification will be sent: $timeStr",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.padding(start = 24.dp, bottom = 2.dp)
                                 )
                             }
-                            Text(
-                                text = "Notification will be sent: $timeStr",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.padding(start = 24.dp, bottom = 2.dp)
-                            )
-                        }
-                        AnimatedVisibility(
-                            visible = openActionCardId.value == reminder.id,
-                            enter = androidx.compose.animation.slideInVertically(),
-                            exit = androidx.compose.animation.slideOutVertically()
-                        ) {
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 24.dp, vertical = 4.dp),
-                                shape = RoundedCornerShape(12.dp),
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                            AnimatedVisibility(
+                                visible = openActionCardId.value == reminder.id,
+                                enter = androidx.compose.animation.slideInVertically(),
+                                exit = androidx.compose.animation.slideOutVertically()
                             ) {
-                                Row(
-                                    Modifier
+                                Card(
+                                    modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(12.dp),
-                                    horizontalArrangement = Arrangement.SpaceEvenly
+                                        .padding(horizontal = 24.dp, vertical = 4.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                                 ) {
-                                    Button(onClick = {
-                                        editReminder.value = reminder
-                                        showDialog.value = true
-                                        openActionCardId.value = null
-                                    }) {
-                                        Text("Edit")
-                                    }
-                                    Button(
-                                        onClick = {
-                                            viewModel.deleteReminder(reminder.id)
-                                            openActionCardId.value = null
-                                        },
-                                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+                                    Row(
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(12.dp),
+                                        horizontalArrangement = Arrangement.SpaceEvenly
                                     ) {
-                                        Text(
-                                            "Delete",
-                                            color = MaterialTheme.colorScheme.onErrorContainer
-                                        )
+                                        Button(onClick = {
+                                            editReminder.value = reminder
+                                            showDialog.value = true
+                                            openActionCardId.value = null
+                                        }) {
+                                            Text("Edit")
+                                        }
+                                        Button(
+                                            onClick = {
+                                                viewModel.deleteReminder(reminder.id)
+                                                openActionCardId.value = null
+                                            },
+                                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+                                        ) {
+                                            Text(
+                                                "Delete",
+                                                color = MaterialTheme.colorScheme.onErrorContainer
+                                            )
+                                        }
                                     }
                                 }
                             }

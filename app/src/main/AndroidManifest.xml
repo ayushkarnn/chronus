@@ -28,7 +28,8 @@
         </activity>
         <receiver
             android:name=".data.notification.AlarmReceiver"
-            android:exported="false"/>
+            android:exported="false"
+            android:enabled="true"/>
     </application>
 
 </manifest>
